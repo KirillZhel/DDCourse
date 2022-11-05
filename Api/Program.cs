@@ -54,11 +54,20 @@ public  class Program
 			});
 		});
 
+		// можно добавл€ть и фабрику контекстов дл€ более глубокого управлени€ инициализацией экземпл€ров контекста
+		// это нужно, например, в случае добавлени€ в бд большого объЄма данных
 		builder.Services.AddDbContext<DAL.DataContext>(options =>
 		{
 			// sql - доп.параметры? чем могут быть эти доп.параметры
 			options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSql"), sql => { });
 		});
+		// можно добавл€ть и фабрику контекстов дл€ более глубокого управлени€ инициализацией экземпл€ров контекста
+		// это нужно, например, в случае добавлени€ в бд большого объЄма данных
+		//builder.Services.AddDbContextFactory<DAL.DataContext>(options =>
+		//{
+		//	options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSql"), sql => { });
+		//});
+
 
 		builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
@@ -119,7 +128,7 @@ public  class Program
 
 		app.UseAuthentication();
 		app.UseAuthorization();
-
+		app.UseTokenValidator();
 		app.MapControllers();
 
 		app.Run();

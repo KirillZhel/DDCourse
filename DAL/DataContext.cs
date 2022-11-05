@@ -10,12 +10,7 @@ namespace DAL
 {
 	public class DataContext : DbContext
 	{
-		public DbSet<User> Users => Set<User>();
-
-		public DataContext(DbContextOptions<DataContext> options) : base(options)
-		{
-
-		}
+		public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -27,9 +22,10 @@ namespace DAL
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			//Api - имя проекта
-			optionsBuilder.UseNpgsql(b => b.MigrationsAssembly("Api"));
-		}
+			=> optionsBuilder.UseNpgsql(b => b.MigrationsAssembly("Api")); //Api - имя проекта
+
+		public DbSet<User> Users => Set<User>();
+		public DbSet<UserSession> UserSessions => Set<UserSession>();
+
 	}
 }
