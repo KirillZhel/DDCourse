@@ -17,6 +17,15 @@ namespace DAL
 
 		}
 
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			//проверка на уникальность по полю Email
+			modelBuilder
+				.Entity<User>()
+				.HasIndex(u => u.Email)
+				.IsUnique();
+		}
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			//Api - имя проекта

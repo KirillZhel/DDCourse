@@ -1,8 +1,12 @@
 ﻿using Api.Models;
+using Api.Services;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DAL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
 {
@@ -10,20 +14,30 @@ namespace Api.Controllers
 	[ApiController]
 	public class UserController : ControllerBase
 	{
-		private readonly IMapper _mapper;
-		private readonly DAL.DataContext _context;
+		private readonly UserService _userService;
 
-		public UserController(IMapper mapper, DataContext context)
+		public UserController(UserService userService)
 		{
-			_mapper = mapper;
-			_context = context;
+			_userService = userService;
 		}
 
 		[HttpPost]
-		public async Task CreateUser(CreateUserModel model)
+		public async Task CreateUser(CreateUserModel model) => await _userService.CreateUser(model);
+
+		[HttpGet]
+		[Authorize]
+		public async Task<List<UserModel>> GetUsers() => await _userService.GetUsers();
+
+		[HttpGet]
+		[Authorize]
+		public async Task<UserModel> GetCurrentUser()
 		{
-			//прописывать логику проверки модели здесь бессмысленно, так как это можно сделать в самой модели CreateUserModel
-			var dbUser = _mapper.Map<DAL.Entities.User>(model);
+			var userIdString = User.Claims.FirstOrDefault(u => u.Type == "id")?.Value;
+
+			if(Guid.TryParse(userIdString, out var userId))
+				return await _userService.GetUser(userId); 
+			else
+				throw new Exception("you are not authorized");
 		}
 	}
 }
