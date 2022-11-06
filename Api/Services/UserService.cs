@@ -43,11 +43,37 @@ namespace Api.Services
 			return await _context.Users.AnyAsync(u => u.Email.ToLower() == email.ToLower());
 		}
 
+		public async Task AddAvatarToUser(Guid userId, MetadataModel meta, string filePath)
+		{
+			var user = await _context.Users.Include(u => u.Avatar).FirstOrDefaultAsync(u => u.Id == userId);
+			if (user != null)
+			{
+				var avatar = new Avatar
+				{
+					Author = user,
+					MineType = meta.MimeType,
+					FilePath = filePath,
+					Name = meta.Name,
+					Size = meta.Size,
+				};
+				user.Avatar = avatar;
+
+				await _context.SaveChangesAsync();
+			}
+		}
+
+		public async Task<AttachModel> GetUserAvatar(Guid userId)
+		{
+			var user = await GetUserById(userId);
+			var attach = _mapper.Map<AttachModel>(user.Avatar);
+			return attach;
+		}
+
 		// обычно так сущности из базы не удаляются. Они помечаются, что они не активны (вроде создаётся поле в таблице юзеров)
 		// и спустя время все "неактивные" сущности удаляются одним махом (так и легче в случае, если требуется восстановить и легче базе удалять, так как это времязатратная операция)
 		public async Task Delete(Guid id)
 		{
-			var dbUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+			var dbUser = await GetUserById(id);
 			if (dbUser != null)
 			{
 				_context.Users.Remove(dbUser); // пометка на удаление
@@ -70,9 +96,9 @@ namespace Api.Services
 			return await _context.Users.AsNoTracking().ProjectTo<UserModel>(_mapper.ConfigurationProvider).ToListAsync();
 		}
 
-		private async Task<DAL.Entities.User> GetUserById(Guid id)
+		private async Task<User> GetUserById(Guid id)
 		{
-			var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+			var user = await _context.Users.Include(u => u.Avatar).FirstOrDefaultAsync(u => u.Id == id);
 
 			if (user == null)
 				throw new Exception("user not found");
@@ -87,7 +113,7 @@ namespace Api.Services
 			return _mapper.Map<UserModel>(user);
 		}
 
-		private async Task<DAL.Entities.User> GetUserByCredention(string login, string password)
+		private async Task<User> GetUserByCredention(string login, string password)
 		{
 			var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == login.ToLower());
 			if (user == null)

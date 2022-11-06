@@ -13,6 +13,8 @@ namespace Api
 				.ForMember(d => d.BirthDate, m => m.MapFrom(s => s.BirthDate.UtcDateTime)); // указываем, что BirthDate должен быть записан в базе с учётом часового пояса
 
 			CreateMap<DAL.Entities.User, Models.UserModel>(); //доп.условий нет, так как то, что взяли из базы то и отдаём
+
+			CreateMap<DAL.Entities.Avatar, Models.AttachModel>();
 		}
 	}
 }

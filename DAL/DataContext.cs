@@ -19,6 +19,8 @@ namespace DAL
 				.Entity<User>()
 				.HasIndex(u => u.Email)
 				.IsUnique();
+
+			modelBuilder.Entity<Avatar>().ToTable(nameof(Avatars));
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -26,6 +28,8 @@ namespace DAL
 
 		public DbSet<User> Users => Set<User>();
 		public DbSet<UserSession> UserSessions => Set<UserSession>();
+		public DbSet<Attach> Attaches => Set<Attach>();
+		public DbSet<Avatar> Avatars => Set<Avatar>();
 
 	}
 }
