@@ -11,7 +11,8 @@ namespace Api.Configs
 		public string Key { get; set; } = string.Empty;
 		public int LifeTime{ get; set; }
 
-		public SymmetricSecurityKey SymmetricSecurityKey() => new (Encoding.UTF8.GetBytes(Key));
+		public SymmetricSecurityKey SymmetricSecurityKey()
+			=> new (Encoding.UTF8.GetBytes(Key));
 
 	}
 }

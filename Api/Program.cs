@@ -1,5 +1,6 @@
 using Api;
 using Api.Configs;
+using Api.Middlewares;
 using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -72,11 +73,13 @@ public  class Program
 		builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
 		builder.Services.AddScoped<UserService>();
-		//сформировать ICollectionServices: var services = builder.Services
-		//сделать метод добавления серфисов в отдельном классе (или в partial для Program)
-		//пример от MindBox мог остаться на ноуте (там есть такое)
+        builder.Services.AddScoped<PostService>();
+		builder.Services.AddScoped<AuthService>();
+        //сформировать ICollectionServices: var services = builder.Services
+        //сделать метод добавления серфисов в отдельном классе (или в partial для Program)
+        //пример от MindBox мог остаться на ноуте (там есть такое)
 
-		builder.Services.AddAuthentication(ao => {
+        builder.Services.AddAuthentication(ao => {
 			ao.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 			}).AddJwtBearer(jbo =>
 			{
